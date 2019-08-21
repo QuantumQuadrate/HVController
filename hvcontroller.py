@@ -76,7 +76,6 @@ def setsync(ser,voltages):
     return ser.readline()
 
 # Set CLR output register (value to set DAC when cleared)
-#TODO: Test me
 def setclear(ser,addr,v):
     dacv = volt_to_dac(v)
     msg = struct.pack('>ccBLc',SET,SETCLR,addr,dacv,'\n')
@@ -84,30 +83,39 @@ def setclear(ser,addr,v):
     return ser.readline()
 
 # Clear DAC to CLR value
-#TODO: Test me
+# Per Arduino code, briefly write 1 to CLR software control register
+# Won't see any actual effect
+#TODO: Is this desired effect? Should Arduino code be edited?
 def clear(ser,addr):
-    msg = struct.pack('>ccBc',SET,CLEAR,addr,'\n')
+    msg = struct.pack('>ccBBc',SET,CLEAR,addr,0,'\n')
     ser.write(msg)
     return ser.readline()
 
 # Read CLR output register
-#TODO: Test me, convert to voltage
 def readclear(ser,addr):
     msg = struct.pack('>ccBc',READ,SETCLR,addr,'\n')
     ser.write(msg)
-    return ser.readline()
+    returnmsg = ser.readline()
+    try:
+        if addr < NDAC:
+            returnmsg,g = struct.unpack('>Lc',returnmsg)
+            return dac_to_volt(returnmsg)
+        else: 
+            return [dac_to_volt(d) for d in struct.unpack('>LLLc',returnmsg)[0:NDAC]]
+    except:
+        return returnmsg
 
-# Initialize DAC: Writes to DAC control register
-#TODO: Add desired control settings, test me
+# Initialize DAC: Sets linear compensation mode and sets DAC control register to value in Arduino
+# Linear Compensation: 1: 10-12V, 2: 12-16V, 3: 16-19V, 4: 19-20V, default: 0-10V
 def initialize(ser,addr):
-    msg = struct.pack('>ccBc',SET,INIT,addr,'\n')
+    linComp = 1
+    msg = struct.pack('>ccBBc',SET,INIT,addr,linComp,'\n')
     ser.write(msg)
     return ser.readline()
 
 # Reset DAC: Returns DAC to state immediately after powering on
-#TODO: Check if other arguments needed, test me
 def reset(ser,addr):
-    msg = struct.pack('ccBc',SET,RESET,addr,'\n')
+    msg = struct.pack('ccBBc',SET,RESET,addr,0,'\n')
     ser.write(msg)
     return ser.readline()
 

@@ -12,10 +12,33 @@ port = 'COM7'
 
 with serial.Serial(port, timeout=1) as ser:
     ser.readline()
+    
+    print 'TESTING INITIALIZE: initializing all DACs'
+    initialize(ser,3)
+    
+    print '\nTESTING RESET: resetting and re-initializing all DACs'
+    reset(ser,3)
+    initialize(ser,3)
+    
+    print '\nTESTING SYNC: setting to (5,2,1)'
     setsync(ser,[5,2,1])
-    print readall(ser)
+    print 'Voltages:', readall(ser)
+    
+    time.sleep(30)
+    
+    print '\nTESTING CLEAR: setting clear of DAC0 to 2 and clearing'
+    print 'Should momentarily set to cleared value and display no error in returned message'
+    setclear(ser,0,2)
+    print 'Clear values:', readclear(ser,NDAC)
+    print repr(clear(ser,0))
+    print 'Should set back to DAC output voltages'
+    print 'Voltages:', readall(ser)
+    
+    print '\nTESTING SETVOLTAGE: setting all to 0'
     setvoltage(ser,NDAC,0)
-    print readall(ser)
+    print 'Voltages:', readall(ser)
+    
+    print '\nTESTING ECHO'
     print echo(ser)
     
 #with serial.Serial(port, timeout=1) as ser:
