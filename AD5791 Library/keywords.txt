@@ -1,0 +1,30 @@
+#######################################
+# Syntax Coloring Map For AD5971
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AD5791 KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setDACconfig	KEYWORD2
+getDACconfig	KEYWORD2
+updateDAC	KEYWORD2
+clearDAC	KEYWORD2
+resetDAC	KEYWORD2
+getDAC	KEYWORD2
+setDAC	KEYWORD2
+getCLR	KEYWORD2
+setCLR	KEYWORD2
+writeRegister	KEYWORD2
+readRegister	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
