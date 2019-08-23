@@ -13,9 +13,14 @@ A serial.Serial serial connection is required as an argument for each function.
 import serial
 import struct
 
-VrefP = 10.5 #TODO: measure to recalibrate
+VrefP = 10.5 
+#measured on board powered with 12V/5V, 10.5 precision reference designed for 15V/5V
+
 VrefN = 0
+#set to GND
+
 NDAC = 3
+#number of DAC boards
 
 # Command characters defined in Arduino code
 ECHO = 'E'
@@ -70,7 +75,7 @@ def setvoltage(ser,addr,v):
     dacv = volt_to_dac(v)
     msg = struct.pack('>ccBLc',SET,OUTPUT,addr,dacv,'\n')
     ser.write(msg)
-    return ser.readline()
+    return ser.read(len(msg))
 
 def readvoltage(ser,addr):
     """
@@ -82,14 +87,15 @@ def readvoltage(ser,addr):
     """
     msg = struct.pack('>ccBc',READ,OUTPUT,addr,'\n')
     ser.write(msg)
-    returnmsg = ser.readline()
+    returnmsg = ser.read(3*4+1)
     try:
         if addr < NDAC:
             return dac_to_volt(struct.unpack('>Lc',returnmsg)[0])
         else:
             return [dac_to_volt(d) for d in struct.unpack('>LLLc',returnmsg)[0:NDAC]]
-    except:
-        return returnmsg
+    except Exception as e:
+        print e
+        return repr(returnmsg)
 
 # Read output register of all DACs
 def readall(ser):
@@ -110,7 +116,7 @@ def setsync(ser,voltages):
     d = [volt_to_dac(v) for v in voltages]
     msg = struct.pack('>ccB%dL' % NDAC,SET,SYNC,NDAC,*d)
     ser.write(msg)
-    return ser.readline()
+    return ser.read(len(msg))
 
 def setclear(ser,addr,v):
     """
@@ -124,7 +130,7 @@ def setclear(ser,addr,v):
     dacv = volt_to_dac(v)
     msg = struct.pack('>ccBLc',SET,SETCLR,addr,dacv,'\n')
     ser.write(msg)
-    return ser.readline()
+    return ser.read(len(msg))
 
 # Clear DAC to CLR value
 # Per Arduino code, briefly write 1 to CLR software control register
@@ -140,7 +146,7 @@ def clear(ser,addr):
     """
     msg = struct.pack('>ccBBc',SET,CLEAR,addr,0,'\n')
     ser.write(msg)
-    return ser.readline()
+    return ser.read(len(msg))
 
 def readclear(ser,addr):
     """
@@ -152,7 +158,7 @@ def readclear(ser,addr):
     """
     msg = struct.pack('>ccBc',READ,SETCLR,addr,'\n')
     ser.write(msg)
-    returnmsg = ser.readline()
+    returnmsg = ser.read(3*4+1)
     try:
         if addr < NDAC:
             returnmsg,g = struct.unpack('>Lc',returnmsg)
@@ -175,7 +181,7 @@ def initialize(ser,addr,linComp):
     """
     msg = struct.pack('>ccBBc',SET,INIT,addr,linComp,'\n')
     ser.write(msg)
-    return ser.readline()
+    return ser.read(len(msg))
 
 # Reset DAC: Returns DAC to state immediately after powering on
 def reset(ser,addr):
@@ -189,7 +195,7 @@ def reset(ser,addr):
     """
     msg = struct.pack('ccBBc',SET,RESET,addr,0,'\n')
     ser.write(msg)
-    return ser.readline()
+    return ser.read(len(msg))
 
 # Echo: Echos a short message
 def echo(ser):

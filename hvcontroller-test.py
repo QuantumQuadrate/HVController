@@ -18,7 +18,7 @@ with serial.Serial(port, timeout=1) as ser:
     
     print '\nTESTING RESET: resetting and re-initializing all DACs'
     reset(ser,3)
-    initialize(ser,3)
+    initialize(ser,3,1)
     
     print '\nTESTING SYNC: setting to (5,2,1)'
     setsync(ser,[5,2,1])
