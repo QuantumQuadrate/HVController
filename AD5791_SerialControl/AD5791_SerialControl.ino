@@ -92,7 +92,7 @@ void setup(){
   for(i=0;i<N_DAC;i=i+1){
     pinMode(DAC[i],OUTPUT);
     digitalWrite(DAC[i],HIGH);
-    setDACconfig(DAC[i],0);  
+    setDACconfig(DAC[i],1);  
   }  
  
    

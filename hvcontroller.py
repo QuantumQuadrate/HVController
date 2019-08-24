@@ -13,7 +13,7 @@ A serial.Serial serial connection is required as an argument for each function.
 import serial
 import struct
 
-VrefP = 10.5 
+VrefP = 10.38
 #measured on board powered with 12V/5V, 10.5 precision reference designed for 15V/5V
 
 VrefN = 0
@@ -87,11 +87,12 @@ def readvoltage(ser,addr):
     """
     msg = struct.pack('>ccBc',READ,OUTPUT,addr,'\n')
     ser.write(msg)
-    returnmsg = ser.read(3*4+1)
     try:
         if addr < NDAC:
+            returnmsg = ser.read(4+1)
             return dac_to_volt(struct.unpack('>Lc',returnmsg)[0])
         else:
+            returnmsg = ser.read(3*4+1)
             return [dac_to_volt(d) for d in struct.unpack('>LLLc',returnmsg)[0:NDAC]]
     except Exception as e:
         print e
