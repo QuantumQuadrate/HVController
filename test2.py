@@ -17,10 +17,10 @@ with serial.Serial(port, timeout=1) as ser:
     initialize(ser,3,1)
     
     for i in range(0,12):
-        print i
+        print (i)
         setvoltage(ser,0,i)
-        print readall(ser)
+        print (readall(ser))
         #time.sleep(4)
     setvoltage(ser,3,0)
-    print readall(ser)
+    print (readall(ser))
     

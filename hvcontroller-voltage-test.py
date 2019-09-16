@@ -9,19 +9,19 @@ import time
 from hvcontroller import *
 import serial
 import numpy as np
+port = '/dev/tty.usbmodem14101'
 
-port = 'COM3'
 
 with serial.Serial(port, timeout=1) as ser:
-    
+    print (ser)    
     reset(ser,3)
     initialize(ser,3,1)
     
     for i in np.arange(0,11,1):
-        print i
+        print (i)
         setvoltage(ser,0,i)
-        print readall(ser)
+        print (readall(ser))
         time.sleep(20)
     
     setvoltage(ser,3,0)
-    print readall(ser)
+    print (readall(ser))

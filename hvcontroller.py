@@ -13,7 +13,7 @@ A serial.Serial serial connection is required as an argument for each function.
 import serial
 import struct
 
-VrefP = 10.38
+VrefP = 10.493
 #measured on board powered with 12V/5V, 10.5 precision reference designed for 15V/5V
 
 VrefN = 0
@@ -35,9 +35,9 @@ CLEAR = 'X'
 OUTPUT = 'O'
 SETCLR = 'C'
 SYNC = 'S'
-
 # ---------------------------------------------------------------------
-
+import sys
+print (sys.getsizeof(RESET))
 def volt_to_dac(V):
     """
     Convert from volts to DAC code according to conversion below 
@@ -95,7 +95,7 @@ def readvoltage(ser,addr):
             returnmsg = ser.read(3*4+1)
             return [dac_to_volt(d) for d in struct.unpack('>LLLc',returnmsg)[0:NDAC]]
     except Exception as e:
-        print e
+        print (e)
         return repr(returnmsg)
 
 # Read output register of all DACs
@@ -194,7 +194,7 @@ def reset(ser,addr):
     :param addr: Address of DAC to be addressed
     :return: Serial output from Arduino, either echo of command or error code
     """
-    msg = struct.pack('ccBBc',SET,RESET,addr,0,'\n')
+    msg = struct.pack('ccBBs',SET,RESET,addr,0,'\n')
     ser.write(msg)
     return ser.read(len(msg))
 
